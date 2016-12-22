@@ -6,7 +6,7 @@
 //  Copyright © 2016年 Facebook. All rights reserved.
 //
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 #import "RNXRPCEvent.h"
 #import "RNXRPCReply.h"
 #import "RNXRPCError.h"

@@ -8,7 +8,7 @@
 
 #import "RNXRPC.h"
 #import "RNXRPCEvent.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @interface RNXRPC()
 @end

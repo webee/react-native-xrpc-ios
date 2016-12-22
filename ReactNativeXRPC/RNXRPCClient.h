@@ -5,7 +5,7 @@
 //  Created by webee on 16/10/23.
 //
 //
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 #import "RNXRPC.h"
 
 @interface RNXRPCClient: NSObject

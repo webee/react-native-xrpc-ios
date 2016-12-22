@@ -5,8 +5,8 @@
 //  Created by webee on 16/10/23.
 //
 //
+#import <React/RCTEventDispatcher.h>
 #import "RNXRPCClient.h"
-#import "RCTEventDispatcher.h"
 #import "RNXRPC.h"
 
 @interface RNXRPCClient()

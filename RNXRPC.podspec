@@ -1,16 +1,12 @@
-require 'json'
-
-package = JSON.parse(File.read(File.join(__dir__, '../package.json')))
-
 Pod::Spec.new do |s|
   s.name                = "RNXRPC"
-  s.version             = package['version']
-  s.summary             = package['description']
+  s.version             = '0.4.0'
+  s.summary             = 'react-native-xprc client for ios'
   s.description         = <<-DESC
-                            RNXRPC enables pub/sub and rpc between natives and js for react-native.
+                            RNXRPC(rpc, pub/sub between js and natives both way and some helpers for react-native.) client for ios.
                          DESC
   s.homepage            = "https://github.com/webee/react-native-xrpc-ios"
-  s.license             = package['license']
+  s.license             = 'MIT'
   s.author              = "webee.yw <webee.yw@gmail.com>"
   s.source              = { :git => "https://github.com/webee/react-native-xrpc-ios", :tag => s.version }
   s.default_subspec     = 'XRPC'

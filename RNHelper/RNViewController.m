@@ -7,7 +7,7 @@
 //
 
 #import "RNViewController.h"
-#import "RCTRootView.h"
+#import <React/RCTRootView.h>
 #import "RN.h"
 
 @interface RNViewController ()
