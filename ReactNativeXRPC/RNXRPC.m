@@ -113,6 +113,7 @@ RCT_EXPORT_METHOD(call: (NSString *) proc args: (NSArray *) args kwargs: (NSDict
     [__reqLock lock];
     RNXDeferred<RNXRPCReply *> *deferred = __requests[rid];
     if (deferred == nil) {
+        [__reqLock unlock];
         return;
     }
     [__requests removeObjectForKey:rid];
@@ -130,6 +131,7 @@ RCT_EXPORT_METHOD(call: (NSString *) proc args: (NSArray *) args kwargs: (NSDict
     [__reqLock lock];
     RNXDeferred<RNXRPCReply *> *deferred = __requests[rid];
     if (deferred == nil) {
+        [__reqLock unlock];
         return;
     }
     [__requests removeObjectForKey:rid];
@@ -151,6 +153,7 @@ RCT_EXPORT_METHOD(call: (NSString *) proc args: (NSArray *) args kwargs: (NSDict
     [__reqLock lock];
     __requests[rid] = deferred;
     [__reqLock unlock];
+    return rid;
 }
 
 + (RACSignal *)register:(NSString *)proc {
