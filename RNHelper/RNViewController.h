@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNX.h"
 
 @interface RNViewController : UIViewController
 
 -(id) initWithModule:(NSString*)moduleName initialProperties:(NSDictionary*)initialProperties;
-    
+-(id) initWithModule:(NSString*)moduleName andRNX:(RNX*)rnx initialProperties:(NSDictionary*)initialProperties;
+
 @end

@@ -48,12 +48,12 @@ static NSString* const APP_EXIT_EVENT = @"native.app.exit";
     [_subAppExit dispose];
 }
 
--(id) init {
+-(id) init:(RNX*)rnx {
     if (self = [super init]) {
         _appInstID = [[NSUUID UUID] UUIDString];
         __weak RNViewController* weakSelf = self;
         // subscribe exit app event.
-        _subAppExit = [[[RN xrpc] sub:APP_EXIT_EVENT] subscribeNext:^(RNXRPCEvent *e) {
+        _subAppExit = [[[rnx xrpc] sub:APP_EXIT_EVENT] subscribeNext:^(RNXRPCEvent *e) {
             id aid = e.args[0];
             if (aid == nil || aid == [NSNull null]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -78,13 +78,17 @@ static NSString* const APP_EXIT_EVENT = @"native.app.exit";
 }
 
 -(id) initWithModule:(NSString*)moduleName initialProperties:(NSDictionary*)initialProperties {
-    if (self = [self init]) {
+    return [self initWithModule:moduleName andRNX:[RN rnx] initialProperties:initialProperties];
+}
+
+-(id) initWithModule:(NSString*)moduleName andRNX:(RNX*)rnx initialProperties:(NSDictionary*)initialProperties {
+    if (self = [self init:rnx]) {
         NSMutableDictionary* props = [[NSMutableDictionary alloc] initWithDictionary:initialProperties];
         props[APP_INST_ID_PROP] = self.appInstID;
-        RCTRootView *rootView = [[RCTRootView alloc] initWithBridge: [RN bridge]
+        RCTRootView *rootView = [[RCTRootView alloc] initWithBridge: [rnx bridge]
                                                          moduleName: moduleName
                                                   initialProperties: props
-                                 ];
+        ];
         self.view = rootView;
     }
     return self;

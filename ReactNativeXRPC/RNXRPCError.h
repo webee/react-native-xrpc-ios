@@ -7,7 +7,7 @@
 //
 #import <Foundation/Foundation.h>
 
-@interface RNXRPCError: NSObject
+@interface RNXRPCError: NSError
 
 @property (nonatomic, strong, readonly) NSString* error;
 @property (nonatomic, strong, readonly) NSArray* args;

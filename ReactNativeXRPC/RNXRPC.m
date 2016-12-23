@@ -7,36 +7,38 @@
 //
 
 #import "RNXRPC.h"
-#import <ReactiveObjC/RACSubject.h>
-#import <React/RCTLog.h>
+#import "RACDisposable.h"
 
-NSString* const XRPC_EVENT = @"__XRPC__";
+NSString *const XRPC_EVENT = @"__XRPC__";
 NSInteger const XRPC_EVENT_CALL = 0;
 NSInteger const XRPC_EVENT_REPLY = 1;
 NSInteger const XRPC_EVENT_REPLY_ERROR = 2;
 NSInteger const XRPC_EVENT_EVENT = 3;
 
 @implementation RNXRPC {
-    NSDictionary* _extraConstants;
+    NSDictionary *_extraConstants;
 }
 static RACSubject *__eventSubject;
-static NSMutableDictionary<NSString*, RNXRPCOnReplyBlock>* requests;
-static NSLock* reqLock;
+static NSMutableDictionary<NSString *, RNXDeferred<RNXRPCReply *> *> *__requests;
+static NSLock *__reqLock;
+static NSMutableDictionary<NSString *, id <RACSubscriber>> *__procedures;
+static NSLock *__procLock;
 
 @synthesize bridge = _bridge;
 
 + (void)initialize {
     __eventSubject = [RACSubject subject];
-
-    requests = [NSMutableDictionary new];
-    reqLock = [[NSLock alloc] init];
+    __requests = [NSMutableDictionary new];
+    __reqLock = [[NSLock alloc] init];
+    __procedures = [NSMutableDictionary new];
+    __procLock = [[NSLock alloc] init];
 }
 
-- (id) init {
+- (id)init {
     return [self initWithExtraConstants:nil];
 }
 
-- (id) initWithExtraConstants:(NSDictionary*)constants {
+- (id)initWithExtraConstants:(NSDictionary *)constants {
     if (self = [super init]) {
         if (constants != nil) {
             _extraConstants = constants;
@@ -54,16 +56,19 @@ RCT_EXPORT_MODULE(XRPC);
 }
 
 - (NSDictionary *)constantsToExport {
-    return @{ @"_XRPC_EVENT": XRPC_EVENT,
-              @"_EVENT_CALL": @(XRPC_EVENT_CALL),
-              @"_EVENT_REPLY": @(XRPC_EVENT_REPLY),
-              @"_EVENT_REPLY_ERROR": @(XRPC_EVENT_REPLY_ERROR),
-              @"_EVENT_EVENT": @(XRPC_EVENT_EVENT),
-              @"C": _extraConstants
-              };
+    return @{@"_XRPC_EVENT": XRPC_EVENT,
+            @"_EVENT_CALL": @(XRPC_EVENT_CALL),
+            @"_EVENT_REPLY": @(XRPC_EVENT_REPLY),
+            @"_EVENT_REPLY_ERROR": @(XRPC_EVENT_REPLY_ERROR),
+            @"_EVENT_EVENT": @(XRPC_EVENT_EVENT),
+            @"C": _extraConstants
+    };
 }
 
-RCT_EXPORT_METHOD(emit:(NSInteger)event args:(NSArray *)args) {
+RCT_EXPORT_METHOD(emit:
+    (NSInteger) event
+            args:
+            (NSArray *) args) {
     switch (event) {
         case XRPC_EVENT_REPLY:
             [self handleCallReply:args];
@@ -79,57 +84,86 @@ RCT_EXPORT_METHOD(emit:(NSInteger)event args:(NSArray *)args) {
     }
 }
 
-RCT_EXPORT_METHOD(call:(NSString *)proc args:(NSArray *)args kwargs:(NSDictionary *)kwargs
-            resolver:(RCTPromiseResolveBlock)resolve
-            rejecter:(RCTPromiseRejectBlock)reject) {
-    // TODO: 接受call
-    RCTLog(@"call %@, %@, %@", proc, args, kwargs);
+RCT_EXPORT_METHOD(call: (NSString *) proc args: (NSArray *) args kwargs: (NSDictionary *) kwargs
+            resolver:
+            (RCTPromiseResolveBlock) resolve
+            rejecter:
+            (RCTPromiseRejectBlock) reject) {
+    [__procLock lock];
+    id<RACSubscriber> subscriber = __procedures[proc];
+    [__procLock unlock];
+
+    if (subscriber) {
+        [subscriber sendNext:[[RNXRPCRequest alloc] initWithArgs:_bridge args:args kwargs:kwargs resolver:resolve rejecter:reject]];
+    } else {
+        reject(@"XRPC_ERROR", @"PROCEDURE NOT REGISTERED", nil);
+    }
 }
 
-- (void) handleEvent:(NSArray*)xargs {
-    NSString* event = xargs[0];
-    NSArray* args = xargs[1];
-    NSDictionary* kwargs = xargs[2];
+- (void)handleEvent:(NSArray *)xargs {
+    NSString *event = xargs[0];
+    NSArray *args = xargs[1];
+    NSDictionary *kwargs = xargs[2];
     [__eventSubject sendNext:[[RNXRPCEvent alloc] initWithArgs:_bridge event:event args:args kwargs:kwargs]];
 }
 
-- (void) handleCallReply:(NSArray*)xargs {
-    NSString* rid = xargs[0];
-    [reqLock lock];
-    RNXRPCOnReplyBlock onReply = requests[rid];
-    if (onReply == nil) {
+- (void)handleCallReply:(NSArray *)xargs {
+    NSString *rid = xargs[0];
+
+    [__reqLock lock];
+    RNXDeferred<RNXRPCReply *> *deferred = __requests[rid];
+    if (deferred == nil) {
         return;
     }
-    [requests removeObjectForKey:rid];
-    [reqLock unlock];
-    NSArray* args = xargs[1];
-    NSDictionary* kwargs = xargs[2];
-    
-    onReply([[RNXRPCReply alloc] initWithArgs:args kwargs:kwargs], nil);
+    [__requests removeObjectForKey:rid];
+    [__reqLock unlock];
+
+    NSArray *args = xargs[1];
+    NSDictionary *kwargs = xargs[2];
+
+    [deferred fulfil:[[RNXRPCReply alloc] initWithArgs:args kwargs:kwargs]];
 }
 
-- (void) handleCallReplyError:(NSArray*)xargs {
-    NSString* rid = xargs[0];
-    [reqLock lock];
-    RNXRPCOnReplyBlock onReply = requests[rid];
-    if (onReply == nil) {
+- (void)handleCallReplyError:(NSArray *)xargs {
+    NSString *rid = xargs[0];
+
+    [__reqLock lock];
+    RNXDeferred<RNXRPCReply *> *deferred = __requests[rid];
+    if (deferred == nil) {
         return;
     }
-    [requests removeObjectForKey:rid];
-    [reqLock unlock];
-    NSString* err = xargs[1];
-    NSArray* args = xargs[2];
-    NSDictionary* kwargs = xargs[3];
-    onReply(nil, [[RNXRPCError alloc] initWithArgs:err args:args kwargs:kwargs]);
+    [__requests removeObjectForKey:rid];
+    [__reqLock unlock];
+
+    NSString *err = xargs[1];
+    NSArray *args = xargs[2];
+    NSDictionary *kwargs = xargs[3];
+
+    [deferred reject:[[RNXRPCError alloc] initWithArgs:err args:args kwargs:kwargs]];
 }
 
 + (nonnull RACSignal<RNXRPCEvent *> *)event {
-    return (RACSignal<RNXRPCEvent *> *) __eventSubject;
+    return __eventSubject;
 }
 
-+ (void) request:(NSString*)rid onReply:(RNXRPCOnReplyBlock)onReply {
-    [reqLock lock];
-    requests[rid] = onReply;
-    [reqLock unlock];
++ (NSString *)request:(RNXDeferred<RNXRPCReply *> *)deferred {
+    NSString *rid = [[NSUUID UUID] UUIDString];
+    [__reqLock lock];
+    __requests[rid] = deferred;
+    [__reqLock unlock];
+}
+
++ (RACSignal *)register:(NSString *)proc {
+    return [RACSignal createSignal:^(id <RACSubscriber> subscriber) {
+        [__procLock lock];
+        __procedures[proc] = subscriber;
+        [__procLock unlock];
+        return [RACDisposable disposableWithBlock:^{
+            // FIXME: impossible.
+            [__procLock lock];
+            [__procedures removeObjectForKey:proc];
+            [__procLock unlock];
+        }];
+    }];
 }
 @end

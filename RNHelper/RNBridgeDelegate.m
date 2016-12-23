@@ -9,21 +9,20 @@
 #import "RNBridgeDelegate.h"
 #import <React/RCTBundleURLProvider.h>
 
-@interface RNBridgeDelegate ()
-
-@property (strong, nonatomic) NSString* env;
-@property (strong, nonatomic) NSArray<id<RCTBridgeModule>>* extraModules;
-
-@end
-
-@implementation RNBridgeDelegate
-- (instancetype)initWithEnv:(NSString *)env {
-    return [self initWithEnv:env andExtraModules:nil];
+@implementation RNBridgeDelegate {
+    NSString *_env;
+    NSString *_name;
+    NSArray<id<RCTBridgeModule>>* _extraModules;
 }
 
-- (instancetype)initWithEnv:(NSString*)env andExtraModules:(NSArray<id<RCTBridgeModule>>*)extranModules {
+- (instancetype)initWithEnv:(NSString *)env andName:(NSString*)name {
+    return [self initWithEnv:env andName:name andExtraModules:nil];
+}
+
+- (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extranModules {
     if (self = [super init]) {
         _env = env;
+        _name = name;
         if (extranModules != nil) {
             _extraModules = extranModules;
         } else {
@@ -35,9 +34,13 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
     if ([_env  isEqual: @"dev"]) {
-        return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:@"rnbundle/index.ios"];
+        return [[RCTBundleURLProvider sharedSettings]
+                jsBundleURLForBundleRoot:[@"index.ios" stringByAppendingString:_name]
+                        fallbackResource:[@"rnbundle/index.ios" stringByAppendingString:_name]];
     } else {
-        return [[NSBundle mainBundle] URLForResource:@"./rnbundle/index.ios" withExtension:@"jsbundle"];
+        return [[NSBundle mainBundle]
+                URLForResource:[@"./rnbundle/index.ios" stringByAppendingString:_name]
+                 withExtension:@"jsbundle"];
     }
 }
 
