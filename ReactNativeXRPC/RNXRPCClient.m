@@ -7,16 +7,13 @@
 //
 #import <React/RCTEventDispatcher.h>
 #import "RNXRPCClient.h"
-#import "RNXRPC.h"
+#import "RNXRPCEventEmitter.h"
 
-@interface RNXRPCClient()
+@implementation RNXRPCClient {
+    RCTBridge* _bridge;
+    NSDictionary* _defaultContext;
+}
 
-@property (nonatomic, strong) RCTBridge* bridge;
-@property (nonatomic, strong) NSDictionary* defaultContext;
-
-@end
-
-@implementation RNXRPCClient
 - (instancetype) initWithReactBridge:(RCTBridge*)bridge {
     return [self initWithReactBridge:bridge andDefaultContext:nil];
 }
@@ -33,24 +30,29 @@
     _defaultContext = context;
 }
 
-- (void) emit:(NSString*)event args:(NSArray*)args kwargs:(NSDictionary*)kwargs {
+- (NSDictionary *) getDefaultContext {
+    return _defaultContext;
+}
+
+- (void) emit:(nonnull NSString*)event args:(nullable NSArray*)args kwargs:(nullable NSDictionary*)kwargs {
     [self emit:event context:_defaultContext args:args kwargs:kwargs];
 }
 
-- (void) emit:(NSString*)event context:(NSDictionary*)context args:(NSArray*)args kwargs:(NSDictionary*)kwargs {
+- (void) emit:(nonnull NSString*)event
+      context:(nullable NSDictionary*)context
+         args:(nullable NSArray*)args
+       kwargs:(nullable NSDictionary*)kwargs {
     context = context == nil ? @{} : context;
     args = args == nil ? @[] : args;
     kwargs = kwargs == nil ? @{} : kwargs;
-    NSArray* data = @[[NSNumber numberWithInteger:XRPC_EVENT_EVENT], event, context, args, kwargs];
-    [self.bridge.eventDispatcher sendAppEventWithName:XRPC_EVENT body:data];
+    NSArray* data = @[@(XRPC_EVENT_EVENT), event, context, args, kwargs];
+    [[_bridge moduleForClass:[RNXRPCEventEmitter class]] sendEvent:data];
 }
 
-- (NSString*) sub:(NSString*)event onEvent:(RNXRPCOnEventBlock)onEvent {
-    return [RNXRPC subscribe:event subscriber:onEvent];
-}
-
-- (void) unsub:(NSString*)event subID:(NSString*)subID {
-    [RNXRPC unsubscribe:event subID:subID];
+- (nonnull RACSignal<RNXRPCEvent *> *) sub:(nonnull NSString*)event {
+    return [[RNXRPC event] filter:^(RNXRPCEvent *e) {
+        return [e.event isEqualToString:event];
+    }];
 }
 
 - (void) call:(NSString*)proc args:(NSArray*)args kwargs:(NSDictionary*)kwargs onReply:(RNXRPCOnReplyBlock)onReply {
@@ -63,8 +65,8 @@
     context = context == nil ? @{} : context;
     args = args == nil ? @[] : args;
     kwargs = kwargs == nil ? @{} : kwargs;
-    NSArray* data = @[[NSNumber numberWithInteger:XRPC_EVENT_CALL], rid, proc, context, args, kwargs];
-    [self.bridge.eventDispatcher sendAppEventWithName:XRPC_EVENT body:data];
+    NSArray* data = @[@(XRPC_EVENT_CALL), rid, proc, context, args, kwargs];
+    [[_bridge moduleForClass:[RNXRPCEventEmitter class]] sendEvent:data];
 }
 
 - (void) register:(NSString*)proc procedure:(RNXRPCProcedureBlock)procedure {

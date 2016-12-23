@@ -10,19 +10,19 @@
 
 @interface RNXRPCClient: NSObject
 
-- (instancetype) initWithReactBridge:(RCTBridge*)bridge;
-- (instancetype) initWithReactBridge:(RCTBridge*)bridge andDefaultContext:(NSDictionary*)context;
+- (nonnull id) initWithReactBridge:(nonnull RCTBridge*)bridge;
+- (nonnull id) initWithReactBridge:(nonnull RCTBridge*)bridge andDefaultContext:(nullable NSDictionary*)context;
 
-- (void) setDefaultContext:(NSDictionary*)context;
+- (void) setDefaultContext:(nullable NSDictionary*)context;
+- (nullable NSDictionary *) getDefaultContext;
 
-- (void) emit:(NSString*)event args:(NSArray*)args kwargs:(NSDictionary*)kwargs;
-- (void) emit:(NSString*)event context:(NSDictionary*)context args:(NSArray*)args kwargs:(NSDictionary*)kwargs;
+- (void) emit:(nonnull NSString*)event args:(nullable NSArray*)args kwargs:(nullable NSDictionary*)kwargs;
+- (void) emit:(nonnull NSString*)event context:(nullable NSDictionary*)context args:(nullable NSArray*)args kwargs:(nullable NSDictionary*)kwargs;
 
-- (NSString*) sub:(NSString*)event onEvent:(RNXRPCOnEventBlock)onEvent;
-- (void) unsub:(NSString*)event subID:(NSString*)subID;
+- (nonnull RACSignal*) sub:(nonnull NSString*)event;
 
-- (void) call:(NSString*)proc args:(NSArray*)args kwargs:(NSDictionary*)kwargs onReply:(RNXRPCOnReplyBlock)onReply;
-- (void) call:(NSString*)proc context:(NSDictionary*)context args:(NSArray*)args kwargs:(NSDictionary*)kwargs onReply:(RNXRPCOnReplyBlock)onReply;
+- (void) call:(nonnull NSString*)proc args:(nullable NSArray*)args kwargs:(nullable NSDictionary*)kwargs onReply:(nonnull RNXRPCOnReplyBlock)onReply;
+- (void) call:(nonnull NSString*)proc context:(nullable NSDictionary*)context args:(nullable NSArray*)args kwargs:(nullable NSDictionary*)kwargs onReply:(nonnull RNXRPCOnReplyBlock)onReply;
 
-- (void) register:(NSString*)proc procedure:(RNXRPCProcedureBlock)procedure;
+- (void) register:(nonnull NSString*)proc procedure:(nonnull RNXRPCProcedureBlock)procedure;
 @end

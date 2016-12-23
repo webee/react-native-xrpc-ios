@@ -11,7 +11,7 @@
 
 @interface RNXRPCRequest: NSObject
 
-@property (nonatomic, strong, readonly) RCTBridge* bridge;
+@property (nonatomic, weak, readonly) RCTBridge* bridge;
 @property (nonatomic, strong, readonly) NSArray* args;
 @property (nonatomic, strong, readonly) NSDictionary* kwargs;
 @property (nonatomic, strong, readonly) RCTPromiseResolveBlock resolve;
