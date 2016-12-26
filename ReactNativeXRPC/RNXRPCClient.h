@@ -22,11 +22,17 @@
 
 - (void)emit:(nonnull NSString *)event context:(nullable NSDictionary *)context args:(nullable NSArray *)args kwargs:(nullable NSDictionary *)kwargs;
 
-- (nonnull RACSignal *)sub:(nonnull NSString *)event;
+- (nonnull RACSignal<RNXRPCEvent *> *)sub:(nonnull NSString *)event;
 
+/**
+ * @return Promise<RNXRPCReply *>
+ */
 - (nonnull AnyPromise *)call:(nonnull NSString *)proc args:(nullable NSArray *)args kwargs:(nullable NSDictionary *)kwargs;
 
+/**
+ * @return Promise<RNXRPCReply *>
+ */
 - (nonnull AnyPromise *)call:(nonnull NSString *)proc context:(nullable NSDictionary *)context args:(nullable NSArray *)args kwargs:(nullable NSDictionary *)kwargs;
 
-- (nonnull RACSignal *)register:(nonnull NSString *)proc;
+- (nonnull RACSignal<RNXRPCRequest *> *)register:(nonnull NSString *)proc;
 @end

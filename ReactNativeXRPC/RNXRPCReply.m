@@ -10,7 +10,7 @@
 
 @implementation RNXRPCReply
 
-- (instancetype)initWithArgs:(NSArray*)args kwargs:(NSDictionary*)kwargs {
+- (id)initWithArgs:(NSArray*)args kwargs:(NSDictionary*)kwargs {
     if (self = [super init]) {
         _args = args;
         _kwargs = kwargs;

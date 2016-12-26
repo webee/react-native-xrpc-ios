@@ -16,5 +16,5 @@
 @property (nonatomic, strong, readonly) NSArray* args;
 @property (nonatomic, strong, readonly) NSDictionary* kwargs;
 
-- (instancetype)initWithArgs:(RCTBridge*)bridge event:(NSString*)event args:(NSArray*)args kwargs:(NSDictionary*)kwargs;
+- (id)initWithArgs:(RCTBridge*)bridge event:(NSString*)event args:(NSArray*)args kwargs:(NSDictionary*)kwargs;
 @end

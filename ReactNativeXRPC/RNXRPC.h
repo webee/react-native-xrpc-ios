@@ -25,9 +25,9 @@ typedef void (^RNXRPCProcedureBlock)(RNXRPCRequest *_Nonnull request);
 @interface RNXRPC : NSObject <RCTBridgeModule>
 - (nonnull id)initWithExtraConstants:(nullable NSDictionary *)constants;
 
-+ (nonnull RACSignal *)event;
++ (nonnull RACSignal<RNXRPCEvent *> *)event;
 
 + (nonnull NSString *)request:(nonnull RNXDeferred<RNXRPCReply *> *)deferred;
 
-+ (nonnull RACSignal *)register:(nonnull NSString *)proc;
++ (nonnull RACSignal<RNXRPCRequest *> *)register:(nonnull NSString *)proc;
 @end

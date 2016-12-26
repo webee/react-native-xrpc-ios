@@ -23,6 +23,4 @@
 - (nonnull RNXRPCClient *)newXrpc:(nullable NSDictionary *)context;
 
 - (nonnull RNXRPCClient *)newXrpc;
-
-+ (nullable RNX *)getByID:(nonnull NSString *)id;
 @end

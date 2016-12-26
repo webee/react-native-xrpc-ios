@@ -156,7 +156,7 @@ RCT_EXPORT_METHOD(call: (NSString *) proc args: (NSArray *) args kwargs: (NSDict
     return rid;
 }
 
-+ (RACSignal *)register:(NSString *)proc {
++ (RACSignal<RNXRPCRequest *> *)register:(NSString *)proc {
     return [RACSignal createSignal:^(id <RACSubscriber> subscriber) {
         [__procLock lock];
         __procedures[proc] = subscriber;

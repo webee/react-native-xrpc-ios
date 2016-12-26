@@ -15,11 +15,11 @@
     NSDictionary *_defaultContext;
 }
 
-- (instancetype)initWithReactBridge:(RCTBridge *)bridge {
+- (id)initWithReactBridge:(RCTBridge *)bridge {
     return [self initWithReactBridge:bridge andDefaultContext:nil];
 }
 
-- (instancetype)initWithReactBridge:(RCTBridge *)bridge andDefaultContext:(NSDictionary *)context {
+- (id)initWithReactBridge:(RCTBridge *)bridge andDefaultContext:(NSDictionary *)context {
     if (self = [super init]) {
         _bridge = bridge;
         _defaultContext = context;
@@ -56,10 +56,16 @@
     }];
 }
 
+/**
+ * @return Promise<RNXRPCReply *>
+ */
 - (AnyPromise *)call:(NSString *)proc args:(NSArray *)args kwargs:(NSDictionary *)kwargs {
     return [self call:proc context:_defaultContext args:args kwargs:kwargs];
 }
 
+/**
+ * @return Promise<RNXRPCReply *>
+ */
 - (AnyPromise *)call:(NSString *)proc context:(NSDictionary *)context args:(NSArray *)args kwargs:(NSDictionary *)kwargs {
     RNXDeferred<RNXRPCReply *> *deferred = [[RNXDeferred alloc] init];
     NSString *rid = [RNXRPC request:deferred];
@@ -73,7 +79,7 @@
     return deferred.promise;
 }
 
-- (nonnull RACSignal *)register:(nonnull NSString *)proc {
+- (nonnull RACSignal<RNXRPCRequest *> *)register:(nonnull NSString *)proc {
     return [RNXRPC register:proc];
 }
 @end

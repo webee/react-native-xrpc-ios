@@ -17,6 +17,6 @@
 @property (nonatomic, strong, readonly) RCTPromiseResolveBlock resolve;
 @property (nonatomic, strong, readonly) RCTPromiseRejectBlock reject;
 
-- (instancetype)initWithArgs:(RCTBridge*)bridge args:(NSArray*)args kwargs:(NSDictionary*)kwargs
+- (id)initWithArgs:(RCTBridge*)bridge args:(NSArray*)args kwargs:(NSDictionary*)kwargs
                     resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
 @end

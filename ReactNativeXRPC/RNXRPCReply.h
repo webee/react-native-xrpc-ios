@@ -12,5 +12,5 @@
 @property (nonatomic, strong, readonly) NSArray* args;
 @property (nonatomic, strong, readonly) NSDictionary* kwargs;
 
-- (instancetype)initWithArgs:(NSArray*)args kwargs:(NSDictionary*)kwargs;
+- (id)initWithArgs:(NSArray*)args kwargs:(NSDictionary*)kwargs;
 @end
