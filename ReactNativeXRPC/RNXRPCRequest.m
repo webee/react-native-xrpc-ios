@@ -10,8 +10,8 @@
 
 @implementation RNXRPCRequest
 
-- (id)initWithArgs:(RCTBridge*)bridge args:(NSArray*)args kwargs:(NSDictionary*)kwargs
-            resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (id)initWithArgs:(RCTBridge *)bridge args:(NSArray *)args kwargs:(NSDictionary *)kwargs
+          resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     if (self = [super init]) {
         _bridge = bridge;
         _args = args;

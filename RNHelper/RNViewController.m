@@ -13,15 +13,15 @@
 
 @interface RNViewController ()
 
-@property (strong, nonatomic) NSString* appInstID;
+@property(strong, nonatomic) NSString *appInstID;
 
 @end
 
-static NSString* const APP_INST_ID_PROP = @"appInstID";
-static NSString* const APP_EXIT_EVENT = @"native.app.exit";
+static NSString *const APP_INST_ID_PROP = @"appInstID";
+static NSString *const APP_EXIT_EVENT = @"native.app.exit";
 
 @implementation RNViewController {
-    RACDisposable* _subAppExit;
+    RACDisposable *_subAppExit;
 }
 
 - (void)viewDidLoad {
@@ -44,14 +44,14 @@ static NSString* const APP_EXIT_EVENT = @"native.app.exit";
 }
 */
 
--(void) dealloc {
+- (void)dealloc {
     [_subAppExit dispose];
 }
 
--(id) init:(RNX*)rnx {
+- (id)init:(RNX *)rnx {
     if (self = [super init]) {
         _appInstID = [[NSUUID UUID] UUIDString];
-        __weak RNViewController* weakSelf = self;
+        __weak RNViewController *weakSelf = self;
         // subscribe exit app event.
         _subAppExit = [[[rnx xrpc] sub:APP_EXIT_EVENT] subscribeNext:^(RNXRPCEvent *e) {
             id aid = e.args[0];
@@ -77,17 +77,17 @@ static NSString* const APP_EXIT_EVENT = @"native.app.exit";
     return self;
 }
 
--(id) initWithModule:(NSString*)moduleName initialProperties:(NSDictionary*)initialProperties {
+- (id)initWithModule:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties {
     return [self initWithModule:moduleName andRNX:[RN rnx] initialProperties:initialProperties];
 }
 
--(id) initWithModule:(NSString*)moduleName andRNX:(RNX*)rnx initialProperties:(NSDictionary*)initialProperties {
+- (id)initWithModule:(NSString *)moduleName andRNX:(RNX *)rnx initialProperties:(NSDictionary *)initialProperties {
     if (self = [self init:rnx]) {
-        NSMutableDictionary* props = [[NSMutableDictionary alloc] initWithDictionary:initialProperties];
+        NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithDictionary:initialProperties];
         props[APP_INST_ID_PROP] = self.appInstID;
-        RCTRootView *rootView = [[RCTRootView alloc] initWithBridge: [rnx bridge]
-                                                         moduleName: moduleName
-                                                  initialProperties: props
+        RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:[rnx bridge]
+                                                         moduleName:moduleName
+                                                  initialProperties:props
         ];
         self.view = rootView;
     }

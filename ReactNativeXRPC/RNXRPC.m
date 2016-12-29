@@ -84,13 +84,18 @@ RCT_EXPORT_METHOD(emit:
     }
 }
 
-RCT_EXPORT_METHOD(call: (NSString *) proc args: (NSArray *) args kwargs: (NSDictionary *) kwargs
+RCT_EXPORT_METHOD(call:
+    (NSString *) proc
+            args:
+            (NSArray *) args
+            kwargs:
+            (NSDictionary *) kwargs
             resolver:
             (RCTPromiseResolveBlock) resolve
             rejecter:
             (RCTPromiseRejectBlock) reject) {
     [__procLock lock];
-    id<RACSubscriber> subscriber = __procedures[proc];
+    id <RACSubscriber> subscriber = __procedures[proc];
     [__procLock unlock];
 
     if (subscriber) {

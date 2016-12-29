@@ -10,7 +10,7 @@
 
 @implementation RNXRPCError
 
-- (id)initWithArgs:(NSString*)error args:(NSArray*)args kwargs:(NSDictionary*)kwargs {
+- (id)initWithArgs:(NSString *)error args:(NSArray *)args kwargs:(NSDictionary *)kwargs {
     if (self = [super initWithDomain:@"RNXRPC" code:1 userInfo:@{@"error": error, @"args": args, @"kwargs": kwargs}]) {
         _error = error;
         _args = args;

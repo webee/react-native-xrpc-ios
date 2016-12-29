@@ -8,39 +8,38 @@
 #import "RN.h"
 
 @implementation RN
-static RNX* __rnx;
+static RNX *__rnx;
 
 
-+ (void)setupWithEnv:(NSString*) env launchOptions:(NSDictionary *)launchOptions {
++ (void)setupWithEnv:(NSString *)env launchOptions:(NSDictionary *)launchOptions {
     __rnx = [[RNX alloc] initWithEnv:env andName:@"" launchOptions:launchOptions];
 }
 
-+ (void)setupWithEnv:(NSString*) env andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions {
++ (void)setupWithEnv:(NSString *)env andExtraModules:(NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(NSDictionary *)launchOptions {
     __rnx = [[RNX alloc] initWithEnv:env andName:@"" andExtraModules:extraModules launchOptions:launchOptions];
 }
 
-+ (void)setupWithEnv:(NSString*)env andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions sourceUrl:(NSURL *)url
-{
++ (void)setupWithEnv:(NSString *)env andExtraModules:(NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(NSDictionary *)launchOptions sourceUrl:(NSURL *)url {
     __rnx = [[RNX alloc] initWithEnv:env andName:@"" andExtraModules:extraModules launchOptions:launchOptions sourceUrl:url];
 }
 
-+ (RNX*)rnx {
++ (RNX *)rnx {
     return __rnx;
 }
 
-+ (RCTBridge*) bridge {
++ (RCTBridge *)bridge {
     return [__rnx bridge];
 }
 
-+ (RNXRPCClient*) xrpc{
++ (RNXRPCClient *)xrpc {
     return [__rnx xrpc];
 }
 
-+ (RNXRPCClient*) newXrpc:(NSDictionary*)context {
++ (RNXRPCClient *)newXrpc:(NSDictionary *)context {
     return [__rnx newXrpc:context];
 }
 
-+ (RNXRPCClient*) newXrpc {
++ (RNXRPCClient *)newXrpc {
     return [__rnx newXrpc];
 }
 @end

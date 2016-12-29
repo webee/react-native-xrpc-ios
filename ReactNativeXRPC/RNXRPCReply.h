@@ -7,10 +7,10 @@
 //
 #import <Foundation/Foundation.h>
 
-@interface RNXRPCReply: NSObject
+@interface RNXRPCReply : NSObject
 
-@property (nonatomic, strong, readonly) NSArray* args;
-@property (nonatomic, strong, readonly) NSDictionary* kwargs;
+@property(nonatomic, strong, readonly) NSArray *args;
+@property(nonatomic, strong, readonly) NSDictionary *kwargs;
 
-- (id)initWithArgs:(NSArray*)args kwargs:(NSDictionary*)kwargs;
+- (id)initWithArgs:(NSArray *)args kwargs:(NSDictionary *)kwargs;
 @end

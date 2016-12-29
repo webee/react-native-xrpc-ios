@@ -7,7 +7,7 @@
 
 
 @interface RNXDeferred<T> : NSObject
-@property (atomic, strong, readonly) AnyPromise *promise;
+@property(atomic, strong, readonly) AnyPromise *promise;
 
 - (void)fulfil:(T)val;
 

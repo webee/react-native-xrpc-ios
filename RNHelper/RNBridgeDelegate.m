@@ -13,25 +13,22 @@
     NSString *_env;
     NSString *_name;
     NSURL *_sourceUrl;
-    NSArray<id<RCTBridgeModule>>* _extraModules;
+    NSArray<id <RCTBridgeModule>> *_extraModules;
 }
 
-- (instancetype)initWithEnv:(NSString *)env andName:(NSString*)name {
+- (instancetype)initWithEnv:(NSString *)env andName:(NSString *)name {
     return [self initWithEnv:env andName:name andExtraModules:nil];
 }
 
-- (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name sourceUrl:(NSURL *)url
-{
+- (instancetype)initWithEnv:(NSString *)env andName:(NSString *)name sourceUrl:(NSURL *)url {
     return [self initWithEnv:env andName:name andExtraModules:nil sourceUrl:url];
 }
 
-- (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extranModules
-{
-    return [self initWithEnv:env andName:name andExtraModules:nil sourceUrl:nil];
+- (instancetype)initWithEnv:(NSString *)env andName:(NSString *)name andExtraModules:(NSArray<id <RCTBridgeModule>> *)extranModules {
+    return [self initWithEnv:env andName:name andExtraModules:extranModules sourceUrl:nil];
 }
 
-- (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extranModules  sourceUrl:(NSURL *)url
-{
+- (instancetype)initWithEnv:(NSString *)env andName:(NSString *)name andExtraModules:(NSArray<id <RCTBridgeModule>> *)extranModules sourceUrl:(NSURL *)url {
     if (self = [super init]) {
         _env = env;
         _name = name;
@@ -43,26 +40,27 @@
         }
     }
     return self;
-    
+
 }
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
     if (_sourceUrl) {
         return _sourceUrl;
-    }else{
-        if ([_env  isEqual: @"dev"]) {
+    } else {
+        if ([_env isEqual:@"dev"]) {
             return [[RCTBundleURLProvider sharedSettings]
                     jsBundleURLForBundleRoot:[@"index.ios" stringByAppendingString:_name]
-                    fallbackResource:[@"rnbundle/index.ios" stringByAppendingString:_name]];
+                            fallbackResource:[@"rnbundle/index.ios" stringByAppendingString:_name]];
         } else {
             return [[NSBundle mainBundle]
                     URLForResource:[@"./rnbundle/index.ios" stringByAppendingString:_name]
-                    withExtension:@"jsbundle"];
+                     withExtension:@"jsbundle"];
         }
     }
-    
+
 }
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
+- (NSArray<id <RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
     return _extraModules;
 }
 @end

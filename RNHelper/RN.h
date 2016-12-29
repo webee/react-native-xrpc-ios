@@ -11,15 +11,20 @@
 #import "RNX.h"
 #import "RNXRPCClient.h"
 
-@interface RN: NSObject
-+ (void)setupWithEnv:(NSString*)env launchOptions:(NSDictionary *)launchOptions;
-+ (void)setupWithEnv:(NSString*)env andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions;
+@interface RN : NSObject
++ (void)setupWithEnv:(NSString *)env launchOptions:(NSDictionary *)launchOptions;
 
-+ (void)setupWithEnv:(NSString*)env andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions sourceUrl:(NSURL *)url;
++ (void)setupWithEnv:(NSString *)env andExtraModules:(NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(NSDictionary *)launchOptions;
 
-+ (RNX*)rnx;
-+ (RCTBridge*)bridge;
-+ (RNXRPCClient*)xrpc;
-+ (RNXRPCClient*)newXrpc:(NSDictionary*)context;
-+ (RNXRPCClient*)newXrpc;
++ (void)setupWithEnv:(NSString *)env andExtraModules:(NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(NSDictionary *)launchOptions sourceUrl:(NSURL *)url;
+
++ (RNX *)rnx;
+
++ (RCTBridge *)bridge;
+
++ (RNXRPCClient *)xrpc;
+
++ (RNXRPCClient *)newXrpc:(NSDictionary *)context;
+
++ (RNXRPCClient *)newXrpc;
 @end

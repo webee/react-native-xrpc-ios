@@ -11,42 +11,42 @@
 
 @implementation RNX {
     NSString *_id;
-    RCTBridge* _bridge;
-    RNXRPCClient* _xrpc;
+    RCTBridge *_bridge;
+    RNXRPCClient *_xrpc;
 }
-- (id)initWithEnv:(NSString*) env andName:(NSString*)name launchOptions:(NSDictionary *)launchOptions {
+- (id)initWithEnv:(NSString *)env andName:(NSString *)name launchOptions:(NSDictionary *)launchOptions {
     return [self initWithEnv:env andName:name andExtraModules:nil launchOptions:launchOptions];
 }
 
-- (id)initWithEnv:(NSString*) env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions {
-    return [self initWithEnv:env andName:name andExtraModules:nil launchOptions:launchOptions sourceUrl:nil];
+- (id)initWithEnv:(NSString *)env andName:(NSString *)name andExtraModules:(NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(NSDictionary *)launchOptions {
+    return [self initWithEnv:env andName:name andExtraModules:extraModules launchOptions:launchOptions sourceUrl:nil];
 }
 
-- (nonnull id)initWithEnv:(nonnull NSString *)env andName:(nonnull NSString *)name andExtraModules:(nullable NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(nullable NSDictionary *)launchOptions sourceUrl:(NSURL *)url
-{
+- (nonnull id)initWithEnv:(nonnull NSString *)env andName:(nonnull NSString *)name andExtraModules:(nullable NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(nullable NSDictionary *)launchOptions sourceUrl:(NSURL *)url {
     if (self = [super init]) {
         _bridge = [[RCTBridge alloc]
-                   initWithDelegate:[[RNBridgeDelegate alloc] initWithEnv:env andName:name andExtraModules:extraModules sourceUrl:url]
-                   launchOptions: launchOptions];
+                initWithDelegate:[[RNBridgeDelegate alloc] initWithEnv:env andName:name andExtraModules:extraModules sourceUrl:url]
+                   launchOptions:launchOptions];
         _xrpc = [[RNXRPCClient alloc] initWithReactBridge:_bridge];
+        _id = [[NSUUID UUID] UUIDString];
     }
-    _id = [[NSUUID UUID] UUIDString];
     return self;
-    
+
 }
-- (RCTBridge*) bridge {
+
+- (RCTBridge *)bridge {
     return _bridge;
 }
 
-- (RNXRPCClient*) xrpc{
+- (RNXRPCClient *)xrpc {
     return _xrpc;
 }
 
-- (RNXRPCClient*) newXrpc:(NSDictionary*)context {
+- (RNXRPCClient *)newXrpc:(NSDictionary *)context {
     return [[RNXRPCClient alloc] initWithReactBridge:_bridge andDefaultContext:context];
 }
 
-- (RNXRPCClient*) newXrpc {
+- (RNXRPCClient *)newXrpc {
     return [[RNXRPCClient alloc] initWithReactBridge:_bridge];
 }
 

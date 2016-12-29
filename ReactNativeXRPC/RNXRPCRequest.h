@@ -9,14 +9,14 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridge.h>
 
-@interface RNXRPCRequest: NSObject
+@interface RNXRPCRequest : NSObject
 
-@property (nonatomic, weak, readonly) RCTBridge* bridge;
-@property (nonatomic, strong, readonly) NSArray* args;
-@property (nonatomic, strong, readonly) NSDictionary* kwargs;
-@property (nonatomic, strong, readonly) RCTPromiseResolveBlock resolve;
-@property (nonatomic, strong, readonly) RCTPromiseRejectBlock reject;
+@property(nonatomic, weak, readonly) RCTBridge *bridge;
+@property(nonatomic, strong, readonly) NSArray *args;
+@property(nonatomic, strong, readonly) NSDictionary *kwargs;
+@property(nonatomic, strong, readonly) RCTPromiseResolveBlock resolve;
+@property(nonatomic, strong, readonly) RCTPromiseRejectBlock reject;
 
-- (id)initWithArgs:(RCTBridge*)bridge args:(NSArray*)args kwargs:(NSDictionary*)kwargs
-                    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
+- (id)initWithArgs:(RCTBridge *)bridge args:(NSArray *)args kwargs:(NSDictionary *)kwargs
+          resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
 @end

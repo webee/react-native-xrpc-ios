@@ -5,7 +5,7 @@
 #import "RNXDeferred.h"
 
 @interface RNXDeferred ()
-@property (atomic, strong, readwrite) AnyPromise *promise;
+@property(atomic, strong, readwrite) AnyPromise *promise;
 @end
 
 @implementation RNXDeferred {

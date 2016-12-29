@@ -13,9 +13,9 @@ RCT_EXPORT_MODULE(XRPCEventEmitter);
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body {
     RCTAssert(self.bridge != nil, @"bridge is not set. This is probably because you've "
-              "explicitly synthesized the bridge in %@, even though it's inherited "
-              "from RCTEventEmitter.", [self class]);
-    
+            "explicitly synthesized the bridge in %@, even though it's inherited "
+            "from RCTEventEmitter.", [self class]);
+
     [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter"
                         method:@"emit"
                           args:body ? @[eventName, body] : @[eventName]
@@ -25,6 +25,7 @@ RCT_EXPORT_MODULE(XRPCEventEmitter);
 - (void)sendEvent:(id)event {
     [self sendEventWithName:XRPC_EVENT body:event];
 }
+
 /**
  * Override this method to return an array of supported event names. Attempting
  * to observe or send an event that isn't included in this list will result in
