@@ -14,6 +14,8 @@
 
 - (nonnull id)initWithEnv:(nonnull NSString *)env andName:(nonnull NSString *)name andExtraModules:(nullable NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(nullable NSDictionary *)launchOptions;
 
+- (nonnull id)initWithEnv:(nonnull NSString *)env andName:(nonnull NSString *)name andExtraModules:(nullable NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(nullable NSDictionary *)launchOptions sourceUrl:(nullable NSURL *)url;
+
 - (nonnull NSString *)id;
 
 - (nonnull RCTBridge *)bridge;

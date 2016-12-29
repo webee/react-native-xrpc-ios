@@ -12,4 +12,5 @@
 @interface RNBridgeDelegate: NSObject <RCTBridgeDelegate>
 - (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name;
 - (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extranModules;
+- (instancetype)initWithEnv:(NSString*)env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extranModules  sourceUrl:(NSURL *)url;
 @end

@@ -14,22 +14,26 @@
     RCTBridge* _bridge;
     RNXRPCClient* _xrpc;
 }
-
 - (id)initWithEnv:(NSString*) env andName:(NSString*)name launchOptions:(NSDictionary *)launchOptions {
     return [self initWithEnv:env andName:name andExtraModules:nil launchOptions:launchOptions];
 }
 
 - (id)initWithEnv:(NSString*) env andName:(NSString*)name andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions {
+    return [self initWithEnv:env andName:name andExtraModules:nil launchOptions:launchOptions sourceUrl:nil];
+}
+
+- (nonnull id)initWithEnv:(nonnull NSString *)env andName:(nonnull NSString *)name andExtraModules:(nullable NSArray<id <RCTBridgeModule>> *)extraModules launchOptions:(nullable NSDictionary *)launchOptions sourceUrl:(NSURL *)url
+{
     if (self = [super init]) {
         _bridge = [[RCTBridge alloc]
-                initWithDelegate:[[RNBridgeDelegate alloc] initWithEnv:env andName:name andExtraModules:extraModules]
+                   initWithDelegate:[[RNBridgeDelegate alloc] initWithEnv:env andName:name andExtraModules:extraModules sourceUrl:url]
                    launchOptions: launchOptions];
         _xrpc = [[RNXRPCClient alloc] initWithReactBridge:_bridge];
     }
     _id = [[NSUUID UUID] UUIDString];
     return self;
+    
 }
-
 - (RCTBridge*) bridge {
     return _bridge;
 }

@@ -19,6 +19,11 @@ static RNX* __rnx;
     __rnx = [[RNX alloc] initWithEnv:env andName:@"" andExtraModules:extraModules launchOptions:launchOptions];
 }
 
++ (void)setupWithEnv:(NSString*)env andExtraModules:(NSArray<id<RCTBridgeModule>>*)extraModules launchOptions:(NSDictionary *)launchOptions sourceUrl:(NSURL *)url
+{
+    __rnx = [[RNX alloc] initWithEnv:env andName:@"" andExtraModules:extraModules launchOptions:launchOptions sourceUrl:url];
+}
+
 + (RNX*)rnx {
     return __rnx;
 }
