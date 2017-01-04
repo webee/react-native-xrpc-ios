@@ -1,6 +1,5 @@
 //
 //  RNX.h
-//  Pods
 //
 //  Created by webee on 16/12/23.
 //
