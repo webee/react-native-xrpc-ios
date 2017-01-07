@@ -34,5 +34,9 @@
  */
 - (nonnull AnyPromise *)call:(nonnull NSString *)proc context:(nullable NSDictionary *)context args:(nullable NSArray *)args kwargs:(nullable NSDictionary *)kwargs;
 
+- (RACSignal<RNXRPCReply *> *)subCall:(NSString *)proc args:(NSArray *)args kwargs:(NSDictionary *)kwargs;
+
+- (RACSignal<RNXRPCReply *> *)subCall:(NSString *)proc context:(NSDictionary *)context args:(NSArray *)args kwargs:(NSDictionary *)kwargs;
+
 - (nonnull RACSignal<RNXRPCRequest *> *)register:(nonnull NSString *)proc;
 @end

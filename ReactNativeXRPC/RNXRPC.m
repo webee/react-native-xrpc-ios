@@ -6,8 +6,8 @@
 //  Copyright © 2016年 Facebook. All rights reserved.
 //
 
+#import <ReactiveObjC/RACDisposable.h>
 #import "RNXRPC.h"
-#import "RACDisposable.h"
 
 NSString *const XRPC_EVENT = @"__XRPC__";
 NSInteger const XRPC_EVENT_CALL = 0;
@@ -20,6 +20,7 @@ NSInteger const XRPC_EVENT_EVENT = 3;
 }
 static RACSubject *__eventSubject;
 static NSMutableDictionary<NSString *, RNXDeferred<RNXRPCReply *> *> *__requests;
+static NSMutableDictionary<NSString *, id <RACSubscriber>> *__observable_requests;
 static NSLock *__reqLock;
 static NSMutableDictionary<NSString *, id <RACSubscriber>> *__procedures;
 static NSLock *__procLock;
@@ -29,6 +30,7 @@ static NSLock *__procLock;
 + (void)initialize {
     __eventSubject = [RACSubject subject];
     __requests = [NSMutableDictionary new];
+    __observable_requests = [NSMutableDictionary new];
     __reqLock = [[NSLock alloc] init];
     __procedures = [NSMutableDictionary new];
     __procLock = [[NSLock alloc] init];
@@ -114,39 +116,69 @@ RCT_EXPORT_METHOD(call:
 
 - (void)handleCallReply:(NSArray *)xargs {
     NSString *rid = xargs[0];
+    BOOL hasNext = NO;
+    if (xargs.count >= 4) {
+        hasNext = [(NSNumber *)xargs[3] boolValue];
+    }
 
     [__reqLock lock];
+    // promise
     RNXDeferred<RNXRPCReply *> *deferred = __requests[rid];
-    if (deferred == nil) {
-        [__reqLock unlock];
-        return;
-    }
     [__requests removeObjectForKey:rid];
+
+    // observable.
+    id <RACSubscriber> subscriber = __observable_requests[rid];
+    if (!hasNext) {
+        [__observable_requests removeObjectForKey:rid];
+    }
     [__reqLock unlock];
 
-    NSArray *args = xargs[1];
-    NSDictionary *kwargs = xargs[2];
+    if (deferred != nil && !hasNext) {
+        NSArray *args = xargs[1];
+        NSDictionary *kwargs = xargs[2];
 
-    [deferred fulfil:[[RNXRPCReply alloc] initWithArgs:args kwargs:kwargs]];
+        [deferred fulfil:[[RNXRPCReply alloc] initWithArgs:args kwargs:kwargs]];
+    }
+
+    if (subscriber != nil) {
+        NSArray *args = xargs[1];
+        NSDictionary *kwargs = xargs[2];
+
+        [subscriber sendNext:[[RNXRPCReply alloc] initWithArgs:args kwargs:kwargs]];
+        if (!hasNext) {
+            [subscriber sendCompleted];
+        }
+    }
 }
 
 - (void)handleCallReplyError:(NSArray *)xargs {
     NSString *rid = xargs[0];
 
     [__reqLock lock];
+    // promise
     RNXDeferred<RNXRPCReply *> *deferred = __requests[rid];
-    if (deferred == nil) {
-        [__reqLock unlock];
-        return;
-    }
     [__requests removeObjectForKey:rid];
+
+    // observable.
+    id <RACSubscriber> subscriber = __observable_requests[rid];
+    [__observable_requests removeObjectForKey:rid];
     [__reqLock unlock];
 
-    NSString *err = xargs[1];
-    NSArray *args = xargs[2];
-    NSDictionary *kwargs = xargs[3];
+    if (deferred != nil) {
+        NSString *err = xargs[1];
+        NSArray *args = xargs[2];
+        NSDictionary *kwargs = xargs[3];
 
-    [deferred reject:[[RNXRPCError alloc] initWithArgs:err args:args kwargs:kwargs]];
+        [deferred reject:[[RNXRPCError alloc] initWithArgs:err args:args kwargs:kwargs]];
+    }
+
+    if (subscriber != nil) {
+        NSString *err = xargs[1];
+        NSArray *args = xargs[2];
+        NSDictionary *kwargs = xargs[3];
+
+        [subscriber sendError:[[RNXRPCError alloc] initWithArgs:err args:args kwargs:kwargs]];
+    }
 }
 
 + (nonnull RACSignal<RNXRPCEvent *> *)event {
@@ -159,6 +191,20 @@ RCT_EXPORT_METHOD(call:
     __requests[rid] = deferred;
     [__reqLock unlock];
     return rid;
+}
+
++ (NSString *)subRequest:(id <RACSubscriber>)subscriber {
+    NSString *rid = [[NSUUID UUID] UUIDString];
+    [__reqLock lock];
+    __observable_requests[rid] = subscriber;
+    [__reqLock unlock];
+    return rid;
+}
+
++ (void)cancelSubRequest:(NSString *)rid {
+    [__reqLock lock];
+    [__observable_requests removeObjectForKey:rid];
+    [__reqLock unlock];
 }
 
 + (RACSignal<RNXRPCRequest *> *)register:(NSString *)proc {

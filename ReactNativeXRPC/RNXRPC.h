@@ -29,5 +29,9 @@ typedef void (^RNXRPCProcedureBlock)(RNXRPCRequest *_Nonnull request);
 
 + (nonnull NSString *)request:(nonnull RNXDeferred<RNXRPCReply *> *)deferred;
 
++ (NSString *)subRequest:(id <RACSubscriber>)subscriber;
+
++ (void)cancelSubRequest:(nonnull NSString *)rid;
+
 + (nonnull RACSignal<RNXRPCRequest *> *)register:(nonnull NSString *)proc;
 @end

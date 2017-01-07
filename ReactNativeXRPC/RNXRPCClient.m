@@ -5,6 +5,7 @@
 //  Created by webee on 16/10/23.
 //
 //
+#import <ReactiveObjC/RACDisposable.h>
 #import <React/RCTEventDispatcher.h>
 #import "RNXDeferred.h"
 #import "RNXRPCClient.h"
@@ -70,13 +71,31 @@
     RNXDeferred<RNXRPCReply *> *deferred = [[RNXDeferred alloc] init];
     NSString *rid = [RNXRPC request:deferred];
 
+    [self doCall:rid proc:proc context:context args:args kwargs:kwargs];
+
+    return deferred.promise;
+}
+
+- (RACSignal<RNXRPCReply *> *)subCall:(NSString *)proc args:(NSArray *)args kwargs:(NSDictionary *)kwargs {
+    return [self subCall:proc context:_defaultContext args:args kwargs:kwargs];
+}
+
+- (RACSignal<RNXRPCReply *> *)subCall:(NSString *)proc context:(NSDictionary *)context args:(NSArray *)args kwargs:(NSDictionary *)kwargs {
+    return [RACSignal createSignal:^(id <RACSubscriber> subscriber) {
+        NSString * rid = [RNXRPC subRequest:subscriber];
+        [self doCall:rid proc:proc context:context args:args kwargs:kwargs];
+        return [RACDisposable disposableWithBlock:^{
+            [RNXRPC cancelSubRequest:rid];
+        }];
+    }];
+}
+
+- (void)doCall:(NSString *)rid proc:(NSString *)proc context:(NSDictionary *)context args:(NSArray *)args kwargs:(NSDictionary *)kwargs {
     context = context == nil ? @{} : context;
     args = args == nil ? @[] : args;
     kwargs = kwargs == nil ? @{} : kwargs;
     NSArray *data = @[@(XRPC_EVENT_CALL), rid, proc, context, args, kwargs];
     [[_bridge moduleForClass:[RNXRPCEventEmitter class]] sendEvent:data];
-
-    return deferred.promise;
 }
 
 - (nonnull RACSignal<RNXRPCRequest *> *)register:(nonnull NSString *)proc {
