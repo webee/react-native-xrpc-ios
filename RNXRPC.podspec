@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "RNXRPC"
-  s.version             = '0.6.12'
+  s.version             = '0.6.14'
   s.summary             = 'react-native-xprc client for ios'
   s.description         = <<-DESC
                             RNXRPC(rpc, pub/sub between js and natives both way and some helpers for react-native.) client for ios.
